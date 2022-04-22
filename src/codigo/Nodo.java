@@ -5,17 +5,15 @@ import java.util.List;
 
 public class Nodo {
 
-    private List<Integer> torre1 = new ArrayList<Integer>();
-    private List<Integer> torre2 = new ArrayList<Integer>();
-    private List<Integer> torre3 = new ArrayList<Integer>();
-    private boolean visitado;
+    private List<Integer> torre1 = new ArrayList<>();
+    private List<Integer> torre2 = new ArrayList<>();
+    private List<Integer> torre3 = new ArrayList<>();
 
     //#region Constructores
     public Nodo(List<Integer> t1, List<Integer> t2, List<Integer> t3){
         torre1.addAll(t1);
         torre2.addAll(t2);
         torre3.addAll(t3);
-        visitado = false;
 
     }
 
@@ -25,6 +23,28 @@ public class Nodo {
         torre3.addAll(n.getTorre3());
     }
     //#endregion
+
+    public int topTorre(int torre) {
+        int top = 0;
+        try{
+            if(torre == 1) {
+                top = torre1.get(torre1.size() - 1);
+            }
+            if(torre == 2) {
+                top = torre2.get(torre2.size() - 1);
+            }
+            if(torre == 3) {
+                top = torre3.get(torre3.size() - 1);
+            }
+        }catch(Exception e) {
+            return top;
+        }
+        return top;
+    }
+
+    public String toString() {
+        return this.getTorre1() + " " + this.getTorre2() + " " + this.getTorre3();
+    }
 
     //#region setters - getters
     public void setTorre1(List<Integer> t1){
@@ -51,5 +71,13 @@ public class Nodo {
         return torre3;
     }
     //#endregion
+
     
+    public boolean equals(Nodo n) {
+        if(this.torre1.equals(n.torre1) && this.torre2.equals(n.torre2) && this.torre3.equals(n.torre3)){
+            return true;
+        }
+        return false;
+    }
+
 }
