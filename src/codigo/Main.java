@@ -12,11 +12,9 @@ public class Main {
     private Nodo estMeta;
     private Nodo estActual;
 
-    
-
     public void busquedaProfundidad() {
-        //while(true) {
-        for(int i = 0; i < 2; i++) {
+        while(true) {
+        //for(int i = 0; i < 5; i++) {
             System.out.println("--------Inicio--------");
             if(ndAbiertos.isEmpty()) {
                 System.out.println("Solución no encontrada.");
@@ -64,10 +62,27 @@ public class Main {
         if(top2 > 0) {
             sucesorT2(n3, n4, top1, top2, top3);
         }
-//        if(top3 > 0) {
-//            sucesorT3(n5, n6, top1, top2, top3);
-//        }
+        if(top3 > 0) {
+            sucesorT3(n5, n6, top1, top2, top3);
+        }
 
+    }
+
+    public boolean nodoRepetido(Nodo n) {
+        for (Nodo nodo : ndAbiertos) {
+            if(nodo.equals(n)){
+                return true;
+            }
+        }
+        for (Nodo nodo : ndCerrados) {
+            if(nodo.equals(n)){
+                return true;
+            }
+        }
+        if(estActual.equals(n)){
+            return true;
+        }
+        return false;
     }
 
     //#region Sucesores
@@ -90,14 +105,66 @@ public class Main {
                 n2.getTorre3().add(n2.getTorre1().remove(n2.getTorre1().size() - 1));
             }
             // Caso 2
-            if((top1 < top2 && top1 > top3) || (top2 == 0 && top1 > top3)) {
+            else if((top1 < top2 && top1 > top3) || (top2 == 0 && top1 > top3)) {
                 n1.getTorre2().add(n1.getTorre1().remove(n1.getTorre1().size() - 1));
             }
-            if((top1 < top3 && top1 > top2) || (top3 == 0 && top1 > top2)) {
+            else if((top1 < top3 && top1 > top2) || (top3 == 0 && top1 > top2)) {
                 n1.getTorre3().add(n1.getTorre1().remove(n1.getTorre1().size() - 1));
             }
         }
-        boolean dupl = false;
+
+        if(!nodoRepetido(n1)){
+            ndAbiertos.push(n1);
+        }
+        if(!nodoRepetido(n2)) {
+            ndAbiertos.push(n2);
+        }
+
+        /*boolean dupl = false;
+        for(Nodo nodo : ndAbiertos) {
+            if(dupl = n1.equals(nodo)){
+                break;
+            }
+        }
+        if(!dupl) {
+            ndAbiertos.push(n1);
+        }
+        dupl = false;
+        for(Nodo nodo : ndAbiertos) {
+            if(dupl = n2.equals(nodo)){
+                break;
+            }
+        }
+        if(!dupl) {
+            ndAbiertos.push(n2);
+        }*/
+
+    }
+
+    public void sucesorT2(Nodo n1, Nodo n2, int top1, int top2, int top3) {
+        if(top2 != 0) {
+            // Caso 1
+            if((top1 == 0 && top3 == 0) || (top2 < top1 && top3 == 0) || (top2 < top3 && top1 == 0) || (top2 < top1 && top2 < top3)) {
+                n1.getTorre1().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
+                n2.getTorre3().add(n2.getTorre2().remove(n2.getTorre2().size() - 1));
+            }
+            // Caso 2
+            else if((top2 < top1 && top2 > top3) || (top1 == 0 && top2 > top3)) {
+                n1.getTorre1().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
+            }
+            else if((top2 < top3 && top2 > top1) || (top3 == 0 && top2 > top1)) {
+                n1.getTorre3().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
+            }
+        }
+
+        if(!nodoRepetido(n1)){
+            ndAbiertos.push(n1);
+        }
+        if(!nodoRepetido(n2)) {
+            ndAbiertos.push(n2);
+        }
+
+        /*boolean dupl = false;
         for (Nodo nodo : ndAbiertos) {
             if(dupl = n1.equals(nodo)){
                 break;
@@ -114,12 +181,52 @@ public class Main {
         }
         if(!dupl) {
             ndAbiertos.push(n2);
-        }
-
+        }*/
+        
     }
 
-    public void sucesorT2(Nodo n3, Nodo n4, int top1, int top2, int top3) {
-        
+    public void sucesorT3(Nodo n1, Nodo n2, int top1, int top2, int top3) {
+        if(top3 != 0) {
+            // Caso 1
+            if((top2 == 0 && top1 == 0) || (top3 < top2 && top1 == 0) || (top3 < top1 && top2 == 0) || (top3 < top2 && top3 < top1)) {
+                n1.getTorre2().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
+                n2.getTorre1().add(n2.getTorre3().remove(n2.getTorre3().size() - 1));
+            }
+            // Caso 2
+            else if((top3 < top2 && top3 > top1) || (top2 == 0 && top3 > top1)) {
+                n1.getTorre2().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
+            }
+            else if((top3 < top1 && top3 > top2) || (top1 == 0 && top3 > top2)) {
+                n1.getTorre1().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
+            }
+        }
+
+        if(!nodoRepetido(n1)){
+            ndAbiertos.push(n1);
+        }
+        if(!nodoRepetido(n2)) {
+            ndAbiertos.push(n2);
+        }
+
+        /*boolean dupl = false;
+        for (Nodo nodo : ndAbiertos) {
+            if(dupl = n1.equals(nodo)){
+                break;
+            }
+        }
+        if(!dupl) {
+            ndAbiertos.push(n1);
+        }
+        dupl = false;
+        for (Nodo nodo : ndAbiertos) {
+            if(dupl = n2.equals(nodo)){
+                break;
+            }
+        }
+        if(!dupl) {
+            ndAbiertos.push(n2);
+        }*/
+
     }
     //#endregion
 
