@@ -1,20 +1,16 @@
 package codigo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Test {
     public static void main(String[] args) {
-        Test.prueba(3);
+        System.out.println("IN");
+        int a = Utils.leerInt();
+        System.out.println("Ingrese un nombre:");
+        String aux = Utils.leerString();
+        System.out.println("Hola " + aux + " " + a);
     }
-
-    public static void prueba(int a) {
-        List<Integer> lista = new ArrayList<>();
-
-        
-    }
-
-
-
     
 }

@@ -9,30 +9,24 @@ public class Utils {
     private Utils() {throw new IllegalStateException("Clase de utilerías.");}
 
     public static int leerInt() {
-        int aux = 0;
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        try {
-			aux = Integer.parseInt(br.readLine());
-            br.close();
-		} catch (NumberFormatException | IOException e) {
-			System.out.println("Dato inválido.");
-            System.out.println("Ingrese un dato válido.");
-            aux = leerInt();
+		try {
+			return Integer.parseInt(leerString());
+		}catch(NumberFormatException e) {
+			System.out.print("Dato inválido: ");
+			return leerInt();
 		}
-        return aux;
-    }
+	}
 
-    public static String leerString() {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String aux = "";
-        try {
-            aux = br.readLine();
-            br.close();
-        } catch(IOException e){
-            System.out.println("Dato inválido.");
-            aux = leerString();
-        }
-        return aux;
-    }
+	public static String leerString() {
+		String sdato = "";
+		try {
+			InputStreamReader isr = new InputStreamReader(System.in);
+			BufferedReader nose = new BufferedReader(isr);
+			sdato =nose.readLine() ;
+		}catch(IOException e) {
+			System.err.println("Error: "+ e.getMessage());
+		}
+		return sdato;
+	}
     
 }

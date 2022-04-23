@@ -1,21 +1,68 @@
 package codigo;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 public class Main {
 
-    private Stack<Nodo> ndAbiertos = new Stack<>();
+    // Uso de pilas para Búsqueda en Profundidad y colas para Búsqueda en Amplitud.
+    private ArrayDeque<Nodo> ndAbiertos = new ArrayDeque<>();
     private List<Nodo> ndCerrados = new ArrayList<>();
-    private Nodo raiz;
     private Nodo estMeta;
     private Nodo estActual;
+    private char tBusqueda;
+
+    public Main(char tBusqueda, int cDiscos){
+        this.tBusqueda = tBusqueda;
+        inicializar(cDiscos);
+    }
+
+    public void imprimeNodos(List<Nodo> n) {
+        for (Nodo nodo : n) {
+            imprimeEstado(nodo);
+        }
+    }
+
+    public void imprimeNodos(Deque<Nodo> n) {
+        for (Nodo nodo : n) {
+            imprimeEstado(nodo);
+        }
+    }
+
+    public void busquedaAmplitud() {
+        int iteraciones = 0;
+        while(true) {
+            System.out.println("--------Inicio--------");
+            if(ndAbiertos.isEmpty()) {
+                System.out.println("Solución no encontrada.");
+                System.out.println("Cantidad de iteraciones: " + iteraciones);
+                return;
+            }
+            System.out.println("Nodos abiertos:");
+            imprimeNodos(ndAbiertos);
+            System.out.println("Nodos cerrados:");
+            imprimeNodos(ndCerrados);
+            estActual = ndAbiertos.pop();
+            if(estActual.equals(estMeta)) {
+                System.out.println("Solución encontrada!");
+                imprimeEstado(estActual);
+                System.out.println("Iteraciones totales: " + iteraciones);
+                return;
+            }else {
+                System.out.println("Nodo Actual");
+                imprimeEstado(estActual);
+                sucesores(estActual);
+                ndCerrados.add(estActual);
+            }
+            iteraciones++;
+        }
+    }
 
     public void busquedaProfundidad() {
         int iteraciones = 0;
         while(true) {
-        //for(int i = 0; i < 5; i++) {
             System.out.println("--------Inicio--------");
             if(ndAbiertos.isEmpty()) {
                 System.out.println("Solución no encontrada.");
@@ -24,25 +71,23 @@ public class Main {
             }
             
             System.out.println("Nodos abiertos:");
-            for(Nodo n : ndAbiertos){
-                System.out.println(n.toString());
-            }
+            imprimeNodos(ndAbiertos);
             
             System.out.println("Nodos cerrados:");
-            for(Nodo n : ndCerrados){
-                System.out.println(n.toString());
-            }
+            imprimeNodos(ndCerrados);
             estActual = ndAbiertos.pop();
             if(estActual.equals(estMeta)) {
+                System.out.println("Solución encontrada!");
                 imprimeEstado(estActual);
                 System.out.println("Iteraciones totales: " + iteraciones);
                 return;
             } else {
                 System.out.println("Nodo Actual");
                 imprimeEstado(estActual);
-                sucesores(estActual);
+                
                 ndCerrados.add(estActual);
             }
+            sucesores(estActual);
             iteraciones++;
         }
         
@@ -83,10 +128,7 @@ public class Main {
                 return true;
             }
         }
-        if(estActual.equals(n)){
-            return true;
-        }
-        return false;
+        return estActual.equals(n);
     }
 
     //#region Sucesores
@@ -117,11 +159,20 @@ public class Main {
             }
         }
 
-        if(!nodoRepetido(n1)){
-            ndAbiertos.push(n1);
+        if(!nodoRepetido(n1)) {
+            // Si es en profundidad se usa pila, si no, se utiliza cola.
+            if(tBusqueda == 'p') {
+                ndAbiertos.push(n1);
+            }else {
+                ndAbiertos.add(n1);
+            }
         }
         if(!nodoRepetido(n2)) {
-            ndAbiertos.push(n2);
+            if(tBusqueda == 'p') {
+                ndAbiertos.push(n2);
+            }else {
+                ndAbiertos.add(n2);
+            }
         }
 
     }
@@ -146,10 +197,18 @@ public class Main {
         }
 
         if(!nodoRepetido(n1)){
-            ndAbiertos.push(n1);
+            if(tBusqueda == 'p') {
+                ndAbiertos.push(n1);
+            }else {
+                ndAbiertos.add(n1);
+            }
         }
         if(!nodoRepetido(n2)) {
-            ndAbiertos.push(n2);
+            if(tBusqueda == 'p') {
+                ndAbiertos.push(n2);
+            }else {
+                ndAbiertos.add(n2);
+            }
         }
         
     }
@@ -170,20 +229,28 @@ public class Main {
             }
         }
 
-        if(!nodoRepetido(n1)){
-            ndAbiertos.push(n1);
+        if(!nodoRepetido(n1)) {
+            if(tBusqueda == 'p') {
+                ndAbiertos.push(n1);
+            }else {
+                ndAbiertos.add(n1);
+            }
         }
         if(!nodoRepetido(n2)) {
-            ndAbiertos.push(n2);
+            if(tBusqueda == 'p') {
+                ndAbiertos.push(n2);
+            }else {
+                ndAbiertos.add(n2);
+            }
         }
 
     }
     //#endregion
 
     public void inicializar(int dc) {
-        List<Integer> torre1 = new ArrayList<Integer>();
-        List<Integer> torre2 = new ArrayList<Integer>();
-        List<Integer> torre3 = new ArrayList<Integer>();
+        List<Integer> torre1 = new ArrayList<>();
+        List<Integer> torre2 = new ArrayList<>();
+        List<Integer> torre3 = new ArrayList<>();
 
         while(dc != 0) {
             torre1.add(dc);
@@ -191,27 +258,26 @@ public class Main {
         }
 
         estMeta = new Nodo(torre2, torre1, torre3);
-        raiz = new Nodo(torre1, torre2, torre3);
-        ndAbiertos.push(raiz);
+        Nodo raiz = new Nodo(torre1, torre2, torre3);
+        if(tBusqueda == 'p'){
+            ndAbiertos.push(raiz);
+            busquedaProfundidad();
+        }else {
+            ndAbiertos.add(raiz);
+            busquedaAmplitud();
+        }
     }
     
     public void imprimeEstado(Nodo n) {
-        if(n.equals(estMeta)) {
-            System.out.println("Solución encontrada.");
-            System.out.println(n.getTorre1() + " " + n.getTorre2() + " " + n.getTorre3());
-        } else {
-            System.out.println(n.getTorre1() + " " + n.getTorre2() + " " + n.getTorre3());
-        }
+        System.out.println(n.toString());
     }
     
     
     public static void main(String[] args) {
         System.out.println("Ingrese la cantidad de discos:");
         int discos = Utils.leerInt();
-
-        Main busqueda = new Main();
-        busqueda.inicializar(discos);
-    
-        busqueda.busquedaProfundidad();
+        System.out.println("Ingrese tipo de búsqueda (A/P):");
+        char tb = Utils.leerString().toLowerCase().charAt(0);
+        new Main(tb, discos);
     }
 }
