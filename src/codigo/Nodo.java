@@ -8,12 +8,14 @@ public class Nodo {
     private List<Integer> torre1 = new ArrayList<>();
     private List<Integer> torre2 = new ArrayList<>();
     private List<Integer> torre3 = new ArrayList<>();
+    private Nodo nPadre;
 
     //#region Constructores
     public Nodo(List<Integer> t1, List<Integer> t2, List<Integer> t3){
         torre1.addAll(t1);
         torre2.addAll(t2);
         torre3.addAll(t3);
+        nPadre = null;
 
     }
 
@@ -21,8 +23,20 @@ public class Nodo {
         torre1.addAll(n.getTorre1());
         torre2.addAll(n.getTorre2());
         torre3.addAll(n.getTorre3());
+        nPadre = null;
+    }
+
+    public Nodo(Nodo n, Nodo nPadre) {
+        torre1.addAll(n.getTorre1());
+        torre2.addAll(n.getTorre2());
+        torre3.addAll(n.getTorre3());
+        this.nPadre = nPadre;
     }
     //#endregion
+
+    public void insertNodoPadre(Nodo nPadre) {
+        this.nPadre = nPadre;
+    }
 
     public int topTorre(int torre) {
         int top = 0;
@@ -69,6 +83,10 @@ public class Nodo {
 
     public List<Integer> getTorre3(){
         return torre3;
+    }
+
+    public Nodo getPadre() {
+        return nPadre;
     }
     //#endregion
 

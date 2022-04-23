@@ -10,6 +10,7 @@ public class Main {
     // Uso de pilas para Búsqueda en Profundidad y colas para Búsqueda en Amplitud.
     private ArrayDeque<Nodo> ndAbiertos = new ArrayDeque<>();
     private List<Nodo> ndCerrados = new ArrayList<>();
+    private Nodo raiz;
     private Nodo estMeta;
     private Nodo estActual;
     private char tBusqueda;
@@ -31,6 +32,16 @@ public class Main {
         }
     }
 
+    public Nodo imprimeRecorrido(Nodo n) {
+        if(n.equals(raiz)) {
+            System.out.println(n.toString());
+            return n;
+        }
+        System.out.println(n.toString());
+        return imprimeRecorrido(n.getPadre());
+        
+    }
+
     public void busquedaAmplitud() {
         int iteraciones = 0;
         while(true) {
@@ -49,6 +60,8 @@ public class Main {
                 System.out.println("Solución encontrada!");
                 imprimeEstado(estActual);
                 System.out.println("Iteraciones totales: " + iteraciones);
+                System.out.println("-------Recorrido Final-------");
+                imprimeRecorrido(estActual);
                 return;
             }else {
                 System.out.println("Nodo Actual");
@@ -80,6 +93,8 @@ public class Main {
                 System.out.println("Solución encontrada!");
                 imprimeEstado(estActual);
                 System.out.println("Iteraciones totales: " + iteraciones);
+                System.out.println("-------Recorrido Final-------");
+                imprimeRecorrido(estActual);
                 return;
             } else {
                 System.out.println("Nodo Actual");
@@ -98,12 +113,12 @@ public class Main {
         int top2 = n.topTorre(2);
         int top3 = n.topTorre(3);
 
-        Nodo n1 = new Nodo(n);
-        Nodo n2 = new Nodo(n);
-        Nodo n3 = new Nodo(n);
-        Nodo n4 = new Nodo(n);
-        Nodo n5 = new Nodo(n);
-        Nodo n6 = new Nodo(n);
+        Nodo n1 = new Nodo(n, n);
+        Nodo n2 = new Nodo(n, n);
+        Nodo n3 = new Nodo(n, n);
+        Nodo n4 = new Nodo(n, n);
+        Nodo n5 = new Nodo(n, n);
+        Nodo n6 = new Nodo(n, n);
 
         if(top1 > 0) {
             sucesorT1(n1, n2, top1, top2, top3);
@@ -258,7 +273,7 @@ public class Main {
         }
 
         estMeta = new Nodo(torre2, torre1, torre3);
-        Nodo raiz = new Nodo(torre1, torre2, torre3);
+        raiz = new Nodo(torre1, torre2, torre3);
         if(tBusqueda == 'p'){
             ndAbiertos.push(raiz);
             busquedaProfundidad();
