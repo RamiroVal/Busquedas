@@ -14,9 +14,11 @@ public class Main {
     private Nodo estMeta;
     private Nodo estActual;
     private char tBusqueda;
+    private int movimientos;
 
     public Main(char tBusqueda, int cDiscos){
         this.tBusqueda = tBusqueda;
+        movimientos = 0;
         inicializar(cDiscos);
     }
 
@@ -38,11 +40,12 @@ public class Main {
             return n;
         }
         System.out.println(n.toString());
+        movimientos++;
         return imprimeRecorrido(n.getPadre());
         
     }
 
-    public void busquedaAmplitud() {
+    public void iniciaBusqueda() {
         int iteraciones = 0;
         while(true) {
             System.out.println("--------Inicio--------");
@@ -62,6 +65,7 @@ public class Main {
                 System.out.println("Iteraciones totales: " + iteraciones);
                 System.out.println("-------Recorrido Final-------");
                 imprimeRecorrido(estActual);
+                System.out.println("Cantidad de movimientos para llegar a la solución: " + movimientos);
                 return;
             }else {
                 System.out.println("Nodo Actual");
@@ -71,41 +75,6 @@ public class Main {
             }
             iteraciones++;
         }
-    }
-
-    public void busquedaProfundidad() {
-        int iteraciones = 0;
-        while(true) {
-            System.out.println("--------Inicio--------");
-            if(ndAbiertos.isEmpty()) {
-                System.out.println("Solución no encontrada.");
-                System.out.println("Cantidad de iteraciones: " + iteraciones);
-                return;
-            }
-            
-            System.out.println("Nodos abiertos:");
-            imprimeNodos(ndAbiertos);
-            
-            System.out.println("Nodos cerrados:");
-            imprimeNodos(ndCerrados);
-            estActual = ndAbiertos.pop();
-            if(estActual.equals(estMeta)) {
-                System.out.println("Solución encontrada!");
-                imprimeEstado(estActual);
-                System.out.println("Iteraciones totales: " + iteraciones);
-                System.out.println("-------Recorrido Final-------");
-                imprimeRecorrido(estActual);
-                return;
-            } else {
-                System.out.println("Nodo Actual");
-                imprimeEstado(estActual);
-                
-                ndCerrados.add(estActual);
-            }
-            sucesores(estActual);
-            iteraciones++;
-        }
-        
     }
 
     public void sucesores(Nodo n) {
@@ -159,19 +128,25 @@ public class Main {
      * @param top3 Valor top en torre 3
      */
     public void sucesorT1(Nodo n1, Nodo n2, int top1, int top2, int top3) {
-        if(top1 != 0) {
-            // Caso 1
-            if((top2 == 0 && top3 == 0) || (top1 < top2 && top3 == 0) || (top1 < top3 && top2 == 0) || (top1 < top2 && top1 < top3)) {
-                n1.getTorre2().add(n1.getTorre1().remove(n1.getTorre1().size() - 1));
-                n2.getTorre3().add(n2.getTorre1().remove(n2.getTorre1().size() - 1));
+        // Caso 1
+        if((top2 == 0 && top3 == 0) || (top1 < top2 && top3 == 0) || (top1 < top3 && top2 == 0) || (top1 < top2 && top1 < top3)) {
+            n1.getTorre2().add(n1.getTorre1().remove(n1.getTorre1().size() - 1));
+            n2.getTorre3().add(n2.getTorre1().remove(n2.getTorre1().size() - 1));
+            if(!nodoRepetido(n2)) {
+                if(tBusqueda == 'p') {
+                    ndAbiertos.push(n2);
+                }else {
+                    ndAbiertos.add(n2);
+                }
             }
-            // Caso 2
-            else if((top1 < top2 && top1 > top3) || (top2 == 0 && top1 > top3)) {
-                n1.getTorre2().add(n1.getTorre1().remove(n1.getTorre1().size() - 1));
-            }
-            else if((top1 < top3 && top1 > top2) || (top3 == 0 && top1 > top2)) {
-                n1.getTorre3().add(n1.getTorre1().remove(n1.getTorre1().size() - 1));
-            }
+        }
+        // Caso 2
+        else if((top1 < top2 && top1 > top3) || (top2 == 0 && top1 > top3)) {
+            n1.getTorre2().add(n1.getTorre1().remove(n1.getTorre1().size() - 1));
+        }
+        // Caso 3
+        else if((top1 < top3 && top1 > top2) || (top3 == 0 && top1 > top2)) {
+            n1.getTorre3().add(n1.getTorre1().remove(n1.getTorre1().size() - 1));
         }
 
         if(!nodoRepetido(n1)) {
@@ -182,33 +157,29 @@ public class Main {
                 ndAbiertos.add(n1);
             }
         }
-        if(!nodoRepetido(n2)) {
-            if(tBusqueda == 'p') {
-                ndAbiertos.push(n2);
-            }else {
-                ndAbiertos.add(n2);
+        
+    }
+    
+    public void sucesorT2(Nodo n1, Nodo n2, int top1, int top2, int top3) {
+        // Caso 1
+        if((top1 == 0 && top3 == 0) || (top2 < top1 && top3 == 0) || (top2 < top3 && top1 == 0) || (top2 < top1 && top2 < top3)) {
+            n1.getTorre3().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
+            n2.getTorre1().add(n2.getTorre2().remove(n2.getTorre2().size() - 1));
+            if(!nodoRepetido(n2)) {
+                if(tBusqueda == 'p') {
+                    ndAbiertos.push(n2);
+                }else {
+                    ndAbiertos.add(n2);
+                }
             }
         }
-
-    }
-
-    public void sucesorT2(Nodo n1, Nodo n2, int top1, int top2, int top3) {
-        if(top2 != 0) {
-            // Caso 1
-            if((top1 == 0 && top3 == 0) || (top2 < top1 && top3 == 0) || (top2 < top3 && top1 == 0) || (top2 < top1 && top2 < top3)) {
-                n1.getTorre3().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
-                n2.getTorre1().add(n2.getTorre2().remove(n2.getTorre2().size() - 1));
-
-                // n1.getTorre1().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
-                // n2.getTorre3().add(n2.getTorre2().remove(n2.getTorre2().size() - 1));
-            }
-            // Caso 2
-            else if((top2 < top1 && top2 > top3) || (top1 == 0 && top2 > top3)) {
-                n1.getTorre1().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
-            }
-            else if((top2 < top3 && top2 > top1) || (top3 == 0 && top2 > top1)) {
-                n1.getTorre3().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
-            }
+        // Caso 2
+        else if((top2 < top1 && top2 > top3) || (top1 == 0 && top2 > top3)) {
+            n1.getTorre1().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
+        }
+        // Caso 3
+        else if((top2 < top3 && top2 > top1) || (top3 == 0 && top2 > top1)) {
+            n1.getTorre3().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
         }
 
         if(!nodoRepetido(n1)){
@@ -218,30 +189,29 @@ public class Main {
                 ndAbiertos.add(n1);
             }
         }
-        if(!nodoRepetido(n2)) {
-            if(tBusqueda == 'p') {
-                ndAbiertos.push(n2);
-            }else {
-                ndAbiertos.add(n2);
-            }
-        }
         
     }
-
+    
     public void sucesorT3(Nodo n1, Nodo n2, int top1, int top2, int top3) {
-        if(top3 != 0) {
-            // Caso 1
-            if((top2 == 0 && top1 == 0) || (top3 < top2 && top1 == 0) || (top3 < top1 && top2 == 0) || (top3 < top2 && top3 < top1)) {
-                n1.getTorre1().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
-                n2.getTorre2().add(n2.getTorre3().remove(n2.getTorre3().size() - 1));
+        // Caso 1
+        if((top2 == 0 && top1 == 0) || (top3 < top2 && top1 == 0) || (top3 < top1 && top2 == 0) || (top3 < top2 && top3 < top1)) {
+            n1.getTorre1().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
+            n2.getTorre2().add(n2.getTorre3().remove(n2.getTorre3().size() - 1));
+            if(!nodoRepetido(n2)) {
+                if(tBusqueda == 'p') {
+                    ndAbiertos.push(n2);
+                }else {
+                    ndAbiertos.add(n2);
+                }
             }
-            // Caso 2
-            else if((top3 < top2 && top3 > top1) || (top2 == 0 && top3 > top1)) {
-                n1.getTorre2().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
-            }
-            else if((top3 < top1 && top3 > top2) || (top1 == 0 && top3 > top2)) {
-                n1.getTorre1().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
-            }
+        }
+        // Caso 2
+        else if((top3 < top2 && top3 > top1) || (top2 == 0 && top3 > top1)) {
+            n1.getTorre2().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
+        }
+        // Caso 3
+        else if((top3 < top1 && top3 > top2) || (top1 == 0 && top3 > top2)) {
+            n1.getTorre1().add(n1.getTorre3().remove(n1.getTorre3().size() - 1));
         }
 
         if(!nodoRepetido(n1)) {
@@ -249,13 +219,6 @@ public class Main {
                 ndAbiertos.push(n1);
             }else {
                 ndAbiertos.add(n1);
-            }
-        }
-        if(!nodoRepetido(n2)) {
-            if(tBusqueda == 'p') {
-                ndAbiertos.push(n2);
-            }else {
-                ndAbiertos.add(n2);
             }
         }
 
@@ -276,10 +239,10 @@ public class Main {
         raiz = new Nodo(torre1, torre2, torre3);
         if(tBusqueda == 'p'){
             ndAbiertos.push(raiz);
-            busquedaProfundidad();
+            iniciaBusqueda();
         }else {
             ndAbiertos.add(raiz);
-            busquedaAmplitud();
+            iniciaBusqueda();
         }
     }
     

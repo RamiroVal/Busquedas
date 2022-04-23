@@ -92,10 +92,7 @@ public class Nodo {
 
     
     public boolean equals(Nodo n) {
-        if(this.torre1.equals(n.torre1) && this.torre2.equals(n.torre2) && this.torre3.equals(n.torre3)){
-            return true;
-        }
-        return false;
+        return (this.torre1.equals(n.torre1) && this.torre2.equals(n.torre2) && this.torre3.equals(n.torre3));
     }
 
 }
