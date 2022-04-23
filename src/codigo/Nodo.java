@@ -9,6 +9,7 @@ public class Nodo {
     private List<Integer> torre2 = new ArrayList<>();
     private List<Integer> torre3 = new ArrayList<>();
     private Nodo nPadre;
+    private int valor;
 
     //#region Constructores
     public Nodo(List<Integer> t1, List<Integer> t2, List<Integer> t3){
@@ -16,6 +17,7 @@ public class Nodo {
         torre2.addAll(t2);
         torre3.addAll(t3);
         nPadre = null;
+        valor = 0;
 
     }
 
@@ -24,6 +26,7 @@ public class Nodo {
         torre2.addAll(n.getTorre2());
         torre3.addAll(n.getTorre3());
         nPadre = null;
+        valor = 0;
     }
 
     public Nodo(Nodo n, Nodo nPadre) {
@@ -31,6 +34,7 @@ public class Nodo {
         torre2.addAll(n.getTorre2());
         torre3.addAll(n.getTorre3());
         this.nPadre = nPadre;
+        valor = 0;
     }
     //#endregion
 
@@ -56,6 +60,17 @@ public class Nodo {
         return top;
     }
 
+    public int[] valoresTorre2() {
+        int a = 0;
+        for (Integer integer : torre2) {
+            a++;
+        }
+        int[] aux = new int[a];
+        for (int i = 0; i < a; i++) {
+            aux[i] = torre2.get(i);
+        }
+        return aux;
+    }
     public String toString() {
         return this.getTorre1() + " " + this.getTorre2() + " " + this.getTorre3();
     }
@@ -87,6 +102,14 @@ public class Nodo {
 
     public Nodo getPadre() {
         return nPadre;
+    }
+
+    public int getValor() {
+        return valor;
+    }
+
+    public void setValor(int valor) {
+        this.valor = valor;
     }
     //#endregion
 

@@ -4,10 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Test {
     Nodo raiz;
+    List<Nodo> ndFirstBest = new ArrayList<>();
+
 
     public Test() {
         List<Integer> torre1 = new ArrayList<>();
@@ -21,8 +25,7 @@ public class Test {
         }
 
         raiz = new Nodo(torre1, torre2, torre3);
-
-        Nodo aux = new Nodo(raiz);
+        Nodo meta = new Nodo(torre2, torre1, torre3);
 
         Nodo h1 = new Nodo(raiz, raiz);
         Nodo h2 = new Nodo(raiz, raiz);
@@ -30,40 +33,103 @@ public class Test {
         h1.getTorre2().add(h1.getTorre1().remove(h1.getTorre1().size() - 1));
         h2.getTorre3().add(h2.getTorre1().remove(h2.getTorre1().size() - 1));
 
+        int valh1 = calculaValor(h1, meta);
+        h1.setValor(valh1);
+        int valh2 = calculaValor(h2, meta);
+        h2.setValor(valh2);
+
         Nodo h3 = new Nodo(h1, h1);
         h3.getTorre3().add(h3.getTorre1().remove(h3.getTorre1().size() - 1));
+        int valh3 = calculaValor(h3, meta);
+        h2.setValor(valh3);
 
         Nodo h4 = new Nodo(h3, h3);
         Nodo h5 = new Nodo(h3, h3);
         h4.getTorre3().add(h4.getTorre2().remove(h4.getTorre2().size() - 1));
         h5.getTorre1().add(h5.getTorre2().remove(h5.getTorre2().size() - 1));
 
+        int valh4 = calculaValor(h4, meta);
+        h4.setValor(valh4);
+        int valh5 = calculaValor(h5, meta);
+        h5.setValor(valh5);
+
         Nodo h6 = new Nodo(h4, h4);
         h6.getTorre2().add(h6.getTorre1().remove(h6.getTorre1().size() - 1));
+
+        int valh6 = calculaValor(h6, meta);
+        h6.setValor(valh6);
 
         Nodo h7 = new Nodo(h6, h6);
         Nodo h8 = new Nodo(h6, h6);
         h7.getTorre1().add(h7.getTorre3().remove(h7.getTorre3().size() - 1));
         h8.getTorre2().add(h8.getTorre3().remove(h8.getTorre3().size() - 1));
 
+        int valh7 = calculaValor(h7, meta);
+        h7.setValor(valh7);
+        int valh8 = calculaValor(h8, meta);
+        h8.setValor(valh8);
+
         Nodo h9 = new Nodo(h7, h7);
         h9.getTorre2().add(h9.getTorre3().remove(h9.getTorre3().size() - 1));
 
-        Nodo meta = new Nodo(h9, h9);
-        meta.getTorre2().add(meta.getTorre1().remove(meta.getTorre1().size() - 1));
+        int valh9 = calculaValor(h9, meta);
+        h9.setValor(valh9);
 
-        System.out.println("Nodo meta:");
-        System.out.println(meta.toString());
+        Nodo nmeta = new Nodo(h9, h9);
+        nmeta.getTorre2().add(nmeta.getTorre1().remove(nmeta.getTorre1().size() - 1));
 
-        System.out.println("Nodo anterior:");
-        System.out.println(meta.getPadre().toString());
+        //System.out.println("Nodo meta:");
+        //System.out.println(nmeta.toString());
 
-        System.out.println("Anterior al anterior");
-        System.out.println(meta.getPadre().getPadre().toString());
+        //System.out.println("Nodo anterior:");
+        //System.out.println(nmeta.getPadre().toString());
 
-        System.out.println("Recorrido:");
-        imprimeRecorrido(meta);
+        //System.out.println("Anterior al anterior");
+        //System.out.println(nmeta.getPadre().getPadre().getPadre().toString());
 
+        //System.out.println("Valores en torre 2");
+        //int[] valores = nmeta.getPadre().valoresTorre2();
+        ndFirstBest.add(h1);
+        ndFirstBest.add(h9);
+        ndFirstBest.add(h2);
+        ndFirstBest.add(h3);
+        ndFirstBest.add(h4);
+        ndFirstBest.add(h5);
+        ndFirstBest.add(h6);
+        ndFirstBest.add(h7);
+        ndFirstBest.add(h8);
+        
+        ordenarArray();
+
+        Nodo jeje = ndFirstBest.remove(0);
+
+        System.out.println(jeje.toString());
+
+        //for (Nodo i : ndFirstBest) {
+        //    System.out.println(i.toString() + " " + i.getValor());
+        //}
+
+    }
+
+    public int calculaValor(Nodo n, Nodo ndMeta) {
+        int[] vNodo1 = n.valoresTorre2();
+        int[] vNodoM = ndMeta.valoresTorre2();
+        int aux = 0;
+        for(int i = 0; i < vNodo1.length; i++){
+            if(vNodo1[i] == vNodoM[i]) {
+                aux++;
+            }
+        }
+        return aux;
+    }
+
+    public void ordenarArray() {
+        Collections.sort(ndFirstBest, new Comparator<Nodo>() {
+            @Override
+            public int compare(Nodo n1, Nodo n2) {
+                return new Integer(n2.getValor()).compareTo(new Integer(n1.getValor()));
+            }
+        });
     }
 
     public Nodo imprimeRecorrido(Nodo n) {

@@ -2,6 +2,8 @@ package codigo;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 
@@ -10,6 +12,7 @@ public class Main {
     // Uso de pilas para Búsqueda en Profundidad y colas para Búsqueda en Amplitud.
     private ArrayDeque<Nodo> ndAbiertos = new ArrayDeque<>();
     private List<Nodo> ndCerrados = new ArrayList<>();
+    private List<Nodo> ndFirstBest = new ArrayList<>();
     private Nodo raiz;
     private Nodo estMeta;
     private Nodo estActual;
@@ -49,16 +52,43 @@ public class Main {
         int iteraciones = 0;
         while(true) {
             System.out.println("--------Inicio--------");
-            if(ndAbiertos.isEmpty()) {
-                System.out.println("Solución no encontrada.");
-                System.out.println("Cantidad de iteraciones: " + iteraciones);
-                return;
-            }
-            System.out.println("Nodos abiertos:");
-            imprimeNodos(ndAbiertos);
+            if(tBusqueda != 'm') {
+                if(ndAbiertos.isEmpty()) {
+                    System.out.println("Solución no encontrada.");
+                    System.out.println("Cantidad de iteraciones: " + iteraciones);
+                    return;
+                }
+                System.out.println("Nodos abiertos:");
+                imprimeNodos(ndAbiertos);
+                System.out.println("Nodos cerrados:");
+                imprimeNodos(ndCerrados);
+                estActual = (tBusqueda == 'm') ? ndFirstBest.remove(0) : ndAbiertos.pop();
+                if(estActual.equals(estMeta)) {
+                    System.out.println("Solución encontrada!");
+                    imprimeEstado(estActual);
+                    System.out.println("Iteraciones totales: " + iteraciones);
+                    System.out.println("-------Recorrido Final-------");
+                    imprimeRecorrido(estActual);
+                    System.out.println("Cantidad de movimientos para llegar a la solución: " + movimientos);
+                    return;
+                }else {
+                    System.out.println("Nodo Actual");
+                    imprimeEstado(estActual);
+                    sucesores(estActual);
+                    ndCerrados.add(estActual);
+                }
+                iteraciones++;
+            }else {
+                if(ndFirstBest.isEmpty()) {
+                    System.out.println("Solución no encontrada.");
+                    System.out.println("Cantidad de iteraciones: " + iteraciones);
+                    return;
+                }
+                            System.out.println("Nodos abiertos:");
+            imprimeNodos(ndFirstBest);
             System.out.println("Nodos cerrados:");
             imprimeNodos(ndCerrados);
-            estActual = ndAbiertos.pop();
+            estActual = ndFirstBest.remove(0);
             if(estActual.equals(estMeta)) {
                 System.out.println("Solución encontrada!");
                 imprimeEstado(estActual);
@@ -74,6 +104,7 @@ public class Main {
                 ndCerrados.add(estActual);
             }
             iteraciones++;
+            }
         }
     }
 
@@ -102,17 +133,38 @@ public class Main {
     }
 
     public boolean nodoRepetido(Nodo n) {
-        for (Nodo nodo : ndAbiertos) {
-            if(nodo.equals(n)){
-                return true;
+        if(tBusqueda != 'm') {
+            for (Nodo nodo : ndAbiertos) {
+                if(nodo.equals(n)){
+                    return true;
+                }
+            }
+        }else {
+            for (Nodo nodo : ndFirstBest) {
+                if(nodo.equals(n)){
+                    return true;
+                }
             }
         }
+        
         for (Nodo nodo : ndCerrados) {
             if(nodo.equals(n)){
                 return true;
             }
         }
         return estActual.equals(n);
+    }
+
+    public int calculaValor(Nodo n) {
+        int[] vNodo1 = n.valoresTorre2();
+        int[] vNodoM = n.valoresTorre2();
+        int aux = 0;
+        for(int i = 0; i < vNodo1.length; i++){
+            if(vNodo1[i] == vNodoM[i]) {
+                aux++;
+            }
+        }
+        return aux;
     }
 
     //#region Sucesores
@@ -135,8 +187,13 @@ public class Main {
             if(!nodoRepetido(n2)) {
                 if(tBusqueda == 'p') {
                     ndAbiertos.push(n2);
-                }else {
+                }else if(tBusqueda == 'a') {
                     ndAbiertos.add(n2);
+                }else {
+                    int valor = calculaValor(n2);
+                    n2.setValor(valor);
+                    ndFirstBest.add(n2);
+                    ordenarArray();
                 }
             }
         }
@@ -150,11 +207,15 @@ public class Main {
         }
 
         if(!nodoRepetido(n1)) {
-            // Si es en profundidad se usa pila, si no, se utiliza cola.
             if(tBusqueda == 'p') {
                 ndAbiertos.push(n1);
-            }else {
+            }else if(tBusqueda == 'a') {
                 ndAbiertos.add(n1);
+            }else {
+                int valor = calculaValor(n1);
+                n1.setValor(valor);
+                ndFirstBest.add(n1);
+                ordenarArray();
             }
         }
         
@@ -168,8 +229,13 @@ public class Main {
             if(!nodoRepetido(n2)) {
                 if(tBusqueda == 'p') {
                     ndAbiertos.push(n2);
-                }else {
+                }else if(tBusqueda == 'a') {
                     ndAbiertos.add(n2);
+                }else {
+                    int valor = calculaValor(n2);
+                    n2.setValor(valor);
+                    ndFirstBest.add(n2);
+                    ordenarArray();
                 }
             }
         }
@@ -182,11 +248,16 @@ public class Main {
             n1.getTorre3().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
         }
 
-        if(!nodoRepetido(n1)){
+        if(!nodoRepetido(n1)) {
             if(tBusqueda == 'p') {
                 ndAbiertos.push(n1);
-            }else {
+            }else if(tBusqueda == 'a') {
                 ndAbiertos.add(n1);
+            }else {
+                int valor = calculaValor(n1);
+                n1.setValor(valor);
+                ndFirstBest.add(n1);
+                ordenarArray();
             }
         }
         
@@ -200,8 +271,13 @@ public class Main {
             if(!nodoRepetido(n2)) {
                 if(tBusqueda == 'p') {
                     ndAbiertos.push(n2);
-                }else {
+                }else if(tBusqueda == 'a') {
                     ndAbiertos.add(n2);
+                }else {
+                    int valor = calculaValor(n2);
+                    n2.setValor(valor);
+                    ndFirstBest.add(n2);
+                    ordenarArray();
                 }
             }
         }
@@ -217,13 +293,27 @@ public class Main {
         if(!nodoRepetido(n1)) {
             if(tBusqueda == 'p') {
                 ndAbiertos.push(n1);
-            }else {
+            }else if(tBusqueda == 'a') {
                 ndAbiertos.add(n1);
+            }else {
+                int valor = calculaValor(n1);
+                n1.setValor(valor);
+                ndFirstBest.add(n1);
+                ordenarArray();
             }
         }
 
     }
     //#endregion
+
+    public void ordenarArray() {
+        Collections.sort(ndFirstBest, new Comparator<Nodo>() {
+            @Override
+            public int compare(Nodo n1, Nodo n2) {
+                return new Integer(n2.getValor()).compareTo(new Integer(n1.getValor()));
+            }
+        });
+    }
 
     public void inicializar(int dc) {
         List<Integer> torre1 = new ArrayList<>();
@@ -240,8 +330,11 @@ public class Main {
         if(tBusqueda == 'p'){
             ndAbiertos.push(raiz);
             iniciaBusqueda();
-        }else {
+        }else if(tBusqueda == 'a') {
             ndAbiertos.add(raiz);
+            iniciaBusqueda();
+        }else {
+            ndFirstBest.add(raiz);
             iniciaBusqueda();
         }
     }
@@ -254,7 +347,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Ingrese la cantidad de discos:");
         int discos = Utils.leerInt();
-        System.out.println("Ingrese tipo de búsqueda (A/P):");
+        System.out.println("Ingrese tipo de búsqueda (A/P/M):");
         char tb = Utils.leerString().toLowerCase().charAt(0);
         new Main(tb, discos);
     }
