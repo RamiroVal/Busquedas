@@ -130,8 +130,11 @@ public class Main {
         if(top2 != 0) {
             // Caso 1
             if((top1 == 0 && top3 == 0) || (top2 < top1 && top3 == 0) || (top2 < top3 && top1 == 0) || (top2 < top1 && top2 < top3)) {
-                n1.getTorre1().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
-                n2.getTorre3().add(n2.getTorre2().remove(n2.getTorre2().size() - 1));
+                n1.getTorre3().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
+                n2.getTorre1().add(n2.getTorre2().remove(n2.getTorre2().size() - 1));
+
+                // n1.getTorre1().add(n1.getTorre2().remove(n1.getTorre2().size() - 1));
+                // n2.getTorre3().add(n2.getTorre2().remove(n2.getTorre2().size() - 1));
             }
             // Caso 2
             else if((top2 < top1 && top2 > top3) || (top1 == 0 && top2 > top3)) {
