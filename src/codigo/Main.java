@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Main {
@@ -12,12 +13,13 @@ public class Main {
     // Uso de pilas para Búsqueda en Profundidad y colas para Búsqueda en Amplitud.
     private ArrayDeque<Nodo> ndAbiertos = new ArrayDeque<>();
     private List<Nodo> ndCerrados = new ArrayList<>();
-    private List<Nodo> ndFirstBest = new ArrayList<>();
+    private List<Nodo> ndFirstBest = new LinkedList<>();
     private Nodo raiz;
     private Nodo estMeta;
     private Nodo estActual;
     private char tBusqueda;
     private int movimientos;
+    private int valorRaiz = 0;
 
     public Main(char tBusqueda, int cDiscos){
         this.tBusqueda = tBusqueda;
@@ -34,6 +36,15 @@ public class Main {
     public void imprimeNodos(Deque<Nodo> n) {
         for (Nodo nodo : n) {
             imprimeEstado(nodo);
+        }
+    }
+
+    public Nodo calculaValorRaiz(Nodo n) {
+        if(n.equals(raiz)) {
+            return n;
+        }else {
+            valorRaiz++;
+            return n;
         }
     }
 
@@ -192,10 +203,17 @@ public class Main {
                 }else {
                     int valor = calculaValor(n2);
                     n2.setValor(valor);
-                    ndFirstBest.add(n2);
-                    ordenarArray();
+                    if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
+                        ndFirstBest.add(n2);
+                    }else if(ndFirstBest.get(0).getValor() >= valor) {
+                        ndFirstBest.add(0, n2);
+                    }else {
+                        ndFirstBest.add(n2);
+                        ordenarArray();
+                    }
                 }
             }
+
         }
         // Caso 2
         else if((top1 < top2 && top1 > top3) || (top2 == 0 && top1 > top3)) {
@@ -214,8 +232,12 @@ public class Main {
             }else {
                 int valor = calculaValor(n1);
                 n1.setValor(valor);
-                ndFirstBest.add(n1);
-                ordenarArray();
+                if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
+                    ndFirstBest.add(n1);
+                }else {
+                    ndFirstBest.add(n1);
+                    ordenarArray();
+                }
             }
         }
         
@@ -234,8 +256,14 @@ public class Main {
                 }else {
                     int valor = calculaValor(n2);
                     n2.setValor(valor);
-                    ndFirstBest.add(n2);
-                    ordenarArray();
+                    if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
+                        ndFirstBest.add(n2);
+                    }else if(ndFirstBest.get(0).getValor() >= valor) {
+                        ndFirstBest.add(0, n2);
+                    }else {
+                        ndFirstBest.add(n2);
+                        ordenarArray();
+                    }
                 }
             }
         }
@@ -256,8 +284,12 @@ public class Main {
             }else {
                 int valor = calculaValor(n1);
                 n1.setValor(valor);
-                ndFirstBest.add(n1);
-                ordenarArray();
+                if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
+                    ndFirstBest.add(n1);
+                }else {
+                    ndFirstBest.add(n1);
+                    ordenarArray();
+                }
             }
         }
         
@@ -276,8 +308,14 @@ public class Main {
                 }else {
                     int valor = calculaValor(n2);
                     n2.setValor(valor);
-                    ndFirstBest.add(n2);
-                    ordenarArray();
+                    if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
+                        ndFirstBest.add(n2);
+                    }else if(ndFirstBest.get(0).getValor() >= valor) {
+                        ndFirstBest.add(0, n2);
+                    }else {
+                        ndFirstBest.add(n2);
+                        ordenarArray();
+                    }
                 }
             }
         }
@@ -298,8 +336,12 @@ public class Main {
             }else {
                 int valor = calculaValor(n1);
                 n1.setValor(valor);
-                ndFirstBest.add(n1);
-                ordenarArray();
+                if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
+                    ndFirstBest.add(n1);
+                }else {
+                    ndFirstBest.add(n1);
+                    ordenarArray();
+                }
             }
         }
 

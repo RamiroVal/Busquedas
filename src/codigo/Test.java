@@ -11,6 +11,7 @@ import java.util.List;
 public class Test {
     Nodo raiz;
     List<Nodo> ndFirstBest = new ArrayList<>();
+    int valorRaiz = 0;
 
 
     public Test() {
@@ -99,16 +100,21 @@ public class Test {
         ndFirstBest.add(h7);
         ndFirstBest.add(h8);
         
-        ordenarArray();
+        // ordenarArray();
 
         Nodo jeje = ndFirstBest.remove(0);
-
+        System.out.println(h1.toString());
         System.out.println(jeje.toString());
 
-        //for (Nodo i : ndFirstBest) {
-        //    System.out.println(i.toString() + " " + i.getValor());
-        //}
+    }
 
+    public Nodo calculaValorRaiz(Nodo n) {
+        if(n.equals(raiz)) {
+            return n;
+        }else {
+            valorRaiz++;
+            return n;
+        }
     }
 
     public int calculaValor(Nodo n, Nodo ndMeta) {

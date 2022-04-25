@@ -10,6 +10,7 @@ public class Nodo {
     private List<Integer> torre3 = new ArrayList<>();
     private Nodo nPadre;
     private int valor;
+    private int valorRaiz = 0;
 
     //#region Constructores
     public Nodo(List<Integer> t1, List<Integer> t2, List<Integer> t3){
@@ -71,6 +72,7 @@ public class Nodo {
         }
         return aux;
     }
+
     public String toString() {
         return this.getTorre1() + " " + this.getTorre2() + " " + this.getTorre3();
     }
@@ -110,6 +112,14 @@ public class Nodo {
 
     public void setValor(int valor) {
         this.valor = valor;
+    }
+
+    public void setValorRaiz(int valor) {
+        this.valorRaiz = valor;
+    }
+
+    public int getValorRaiz() {
+        return this.valorRaiz;
     }
     //#endregion
 
