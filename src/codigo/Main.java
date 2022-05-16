@@ -14,12 +14,12 @@ public class Main {
     private ArrayDeque<Nodo> ndAbiertos = new ArrayDeque<>();
     private List<Nodo> ndCerrados = new ArrayList<>();
     private List<Nodo> ndFirstBest = new LinkedList<>();
+    private LinkedList<Nodo> ndAsterisco = new LinkedList<>();
     private Nodo raiz;
     private Nodo estMeta;
     private Nodo estActual;
     private char tBusqueda;
     private int movimientos;
-    private int valorRaiz = 0;
 
     public Main(char tBusqueda, int cDiscos){
         this.tBusqueda = tBusqueda;
@@ -33,18 +33,15 @@ public class Main {
         }
     }
 
-    public void imprimeNodos(Deque<Nodo> n) {
+    public void imprimeNodos(LinkedList<Nodo> n) {
         for (Nodo nodo : n) {
             imprimeEstado(nodo);
         }
     }
 
-    public Nodo calculaValorRaiz(Nodo n) {
-        if(n.equals(raiz)) {
-            return n;
-        }else {
-            valorRaiz++;
-            return n;
+    public void imprimeNodos(Deque<Nodo> n) {
+        for (Nodo nodo : n) {
+            imprimeEstado(nodo);
         }
     }
 
@@ -63,7 +60,7 @@ public class Main {
         int iteraciones = 0;
         while(true) {
             System.out.println("--------Inicio--------");
-            if(tBusqueda != 'm') {
+            if(tBusqueda != 'm' && tBusqueda != 's') {
                 if(ndAbiertos.isEmpty()) {
                     System.out.println("Solución no encontrada.");
                     System.out.println("Cantidad de iteraciones: " + iteraciones);
@@ -73,7 +70,7 @@ public class Main {
                 imprimeNodos(ndAbiertos);
                 System.out.println("Nodos cerrados:");
                 imprimeNodos(ndCerrados);
-                estActual = (tBusqueda == 'm') ? ndFirstBest.remove(0) : ndAbiertos.pop();
+                estActual = ndAbiertos.pop();
                 if(estActual.equals(estMeta)) {
                     System.out.println("Solución encontrada!");
                     imprimeEstado(estActual);
@@ -89,18 +86,44 @@ public class Main {
                     ndCerrados.add(estActual);
                 }
                 iteraciones++;
-            }else {
+            }else if(tBusqueda == 'm') {
                 if(ndFirstBest.isEmpty()) {
                     System.out.println("Solución no encontrada.");
                     System.out.println("Cantidad de iteraciones: " + iteraciones);
                     return;
                 }
-                            System.out.println("Nodos abiertos:");
-            imprimeNodos(ndFirstBest);
-            System.out.println("Nodos cerrados:");
-            imprimeNodos(ndCerrados);
-            estActual = ndFirstBest.remove(0);
-            if(estActual.equals(estMeta)) {
+                System.out.println("Nodos abiertos:");
+                imprimeNodos(ndFirstBest);
+                System.out.println("Nodos cerrados:");
+                imprimeNodos(ndCerrados);
+                estActual = ndFirstBest.remove(0);
+                if(estActual.equals(estMeta)) {
+                System.out.println("Solución encontrada!");
+                imprimeEstado(estActual);
+                System.out.println("Iteraciones totales: " + iteraciones);
+                System.out.println("-------Recorrido Final-------");
+                imprimeRecorrido(estActual);
+                System.out.println("Cantidad de movimientos para llegar a la solución: " + movimientos);
+                return;
+            }else {
+                System.out.println("Nodo Actual");
+                imprimeEstado(estActual);
+                sucesores(estActual);
+                ndCerrados.add(estActual);
+            }
+            iteraciones++;
+            }else {
+                if(ndAsterisco.isEmpty()) {
+                    System.out.println("Solución no encontrada.");
+                    System.out.println("Cantidad de iteraciones: " + iteraciones);
+                    return;
+                }
+                System.out.println("Nodos abiertos:");
+                imprimeNodos(ndAsterisco);
+                System.out.println("Nodos cerrados:");
+                imprimeNodos(ndCerrados);
+                estActual = ndAsterisco.remove(0);
+                if(estActual.equals(estMeta)) {
                 System.out.println("Solución encontrada!");
                 imprimeEstado(estActual);
                 System.out.println("Iteraciones totales: " + iteraciones);
@@ -144,14 +167,20 @@ public class Main {
     }
 
     public boolean nodoRepetido(Nodo n) {
-        if(tBusqueda != 'm') {
+        if(tBusqueda == 'p' || tBusqueda == 'a') {
             for (Nodo nodo : ndAbiertos) {
                 if(nodo.equals(n)){
                     return true;
                 }
             }
-        }else {
+        }else if(tBusqueda == 'm') {
             for (Nodo nodo : ndFirstBest) {
+                if(nodo.equals(n)){
+                    return true;
+                }
+            }
+        }else {
+            for (Nodo nodo : ndAsterisco) {
                 if(nodo.equals(n)){
                     return true;
                 }
@@ -178,6 +207,18 @@ public class Main {
         return aux;
     }
 
+    public int calculaValorRaiz(Nodo n) {
+        if(n.equals(raiz)) {
+            return 0;
+        }else {
+            return 1 + calculaValorRaiz(n.getPadre());
+        }
+    }
+
+    public int calculaValorAsterisco(Nodo n) {
+        return calculaValorRaiz(n) - calculaValor(n);
+    }
+
     //#region Sucesores
     /***
      * Sólo pueden ocurrir 3 casos:
@@ -200,7 +241,7 @@ public class Main {
                     ndAbiertos.push(n2);
                 }else if(tBusqueda == 'a') {
                     ndAbiertos.add(n2);
-                }else {
+                }else if(tBusqueda == 'm'){
                     int valor = calculaValor(n2);
                     n2.setValor(valor);
                     if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
@@ -210,6 +251,17 @@ public class Main {
                     }else {
                         ndFirstBest.add(n2);
                         ordenarArray();
+                    }
+                }else {
+                    int valor = calculaValorAsterisco(n2);
+                    n2.setValor(valor);
+                    if(ndAsterisco.isEmpty() || ndAsterisco.get(0).getValor() >= valor){
+                        ndAsterisco.addFirst(n2);
+                    }else if(ndAsterisco.get(ndAsterisco.size() - 1).getValor() <= valor){
+                        ndAsterisco.add(n2);
+                    }else {
+                        ndAsterisco.add(n2);
+                        ordenarMenorMayor();
                     }
                 }
             }
@@ -229,7 +281,7 @@ public class Main {
                 ndAbiertos.push(n1);
             }else if(tBusqueda == 'a') {
                 ndAbiertos.add(n1);
-            }else {
+            }else if(tBusqueda == 'm') {
                 int valor = calculaValor(n1);
                 n1.setValor(valor);
                 if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
@@ -237,6 +289,15 @@ public class Main {
                 }else {
                     ndFirstBest.add(n1);
                     ordenarArray();
+                }
+            }else {
+                int valor = calculaValorAsterisco(n1);
+                n1.setValor(valor);
+                if(ndAsterisco.isEmpty() || ndAsterisco.get(0).getValor() >= valor) {
+                    ndAsterisco.addFirst(n1);
+                }else {
+                    ndAsterisco.add(n1);
+                    ordenarMenorMayor();
                 }
             }
         }
@@ -253,7 +314,7 @@ public class Main {
                     ndAbiertos.push(n2);
                 }else if(tBusqueda == 'a') {
                     ndAbiertos.add(n2);
-                }else {
+                }else if(tBusqueda == 'm'){
                     int valor = calculaValor(n2);
                     n2.setValor(valor);
                     if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
@@ -263,6 +324,17 @@ public class Main {
                     }else {
                         ndFirstBest.add(n2);
                         ordenarArray();
+                    }
+                }else {
+                    int valor = calculaValorAsterisco(n2);
+                    n2.setValor(valor);
+                    if(ndAsterisco.isEmpty() || ndAsterisco.get(0).getValor() >= valor){
+                        ndAsterisco.addFirst(n2);
+                    }else if(ndAsterisco.get(ndAsterisco.size() - 1).getValor() <= valor){
+                        ndAsterisco.add(n2);
+                    }else {
+                        ndAsterisco.add(n2);
+                        ordenarMenorMayor();
                     }
                 }
             }
@@ -281,7 +353,7 @@ public class Main {
                 ndAbiertos.push(n1);
             }else if(tBusqueda == 'a') {
                 ndAbiertos.add(n1);
-            }else {
+            }else if(tBusqueda == 'm') {
                 int valor = calculaValor(n1);
                 n1.setValor(valor);
                 if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
@@ -289,6 +361,15 @@ public class Main {
                 }else {
                     ndFirstBest.add(n1);
                     ordenarArray();
+                }
+            }else {
+                int valor = calculaValorAsterisco(n1);
+                n1.setValor(valor);
+                if(ndAsterisco.isEmpty() || ndAsterisco.get(0).getValor() >= valor) {
+                    ndAsterisco.addFirst(n1);
+                }else {
+                    ndAsterisco.add(n1);
+                    ordenarMenorMayor();
                 }
             }
         }
@@ -305,7 +386,7 @@ public class Main {
                     ndAbiertos.push(n2);
                 }else if(tBusqueda == 'a') {
                     ndAbiertos.add(n2);
-                }else {
+                }else if(tBusqueda == 'm'){
                     int valor = calculaValor(n2);
                     n2.setValor(valor);
                     if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
@@ -315,6 +396,17 @@ public class Main {
                     }else {
                         ndFirstBest.add(n2);
                         ordenarArray();
+                    }
+                }else {
+                    int valor = calculaValorAsterisco(n2);
+                    n2.setValor(valor);
+                    if(ndAsterisco.isEmpty() || ndAsterisco.get(0).getValor() >= valor){
+                        ndAsterisco.addFirst(n2);
+                    }else if(ndAsterisco.get(ndAsterisco.size() - 1).getValor() <= valor){
+                        ndAsterisco.add(n2);
+                    }else {
+                        ndAsterisco.add(n2);
+                        ordenarMenorMayor();
                     }
                 }
             }
@@ -333,7 +425,7 @@ public class Main {
                 ndAbiertos.push(n1);
             }else if(tBusqueda == 'a') {
                 ndAbiertos.add(n1);
-            }else {
+            }else if(tBusqueda == 'm') {
                 int valor = calculaValor(n1);
                 n1.setValor(valor);
                 if(ndFirstBest.isEmpty() || ndFirstBest.get(ndFirstBest.size() - 1).getValor() <= valor) {
@@ -341,6 +433,15 @@ public class Main {
                 }else {
                     ndFirstBest.add(n1);
                     ordenarArray();
+                }
+            }else {
+                int valor = calculaValorAsterisco(n1);
+                n1.setValor(valor);
+                if(ndAsterisco.isEmpty() || ndAsterisco.get(0).getValor() >= valor) {
+                    ndAsterisco.addFirst(n1);
+                }else {
+                    ndAsterisco.add(n1);
+                    ordenarMenorMayor();
                 }
             }
         }
@@ -353,6 +454,15 @@ public class Main {
             @Override
             public int compare(Nodo n1, Nodo n2) {
                 return new Integer(n2.getValor()).compareTo(new Integer(n1.getValor()));
+            }
+        });
+    }
+
+    public void ordenarMenorMayor() {
+        Collections.sort(ndAsterisco, new Comparator<Nodo>() {
+            @Override
+            public int compare(Nodo n1, Nodo n2) {
+                return new Integer(n1.getValor()).compareTo(new Integer(n2.getValor()));
             }
         });
     }
@@ -375,8 +485,11 @@ public class Main {
         }else if(tBusqueda == 'a') {
             ndAbiertos.add(raiz);
             iniciaBusqueda();
-        }else {
+        }else if(tBusqueda == 'm') {
             ndFirstBest.add(raiz);
+            iniciaBusqueda();
+        }else {
+            ndAsterisco.add(raiz);
             iniciaBusqueda();
         }
     }
@@ -389,7 +502,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Ingrese la cantidad de discos:");
         int discos = Utils.leerInt();
-        System.out.println("Ingrese tipo de búsqueda (A/P/M):");
+        System.out.println("Ingrese tipo de búsqueda (A/P/M/S):");
         char tb = Utils.leerString().toLowerCase().charAt(0);
         new Main(tb, discos);
     }

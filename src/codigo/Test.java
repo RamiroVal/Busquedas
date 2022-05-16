@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Arrays;
 
 public class Test {
     Nodo raiz;
@@ -34,30 +35,30 @@ public class Test {
         h1.getTorre2().add(h1.getTorre1().remove(h1.getTorre1().size() - 1));
         h2.getTorre3().add(h2.getTorre1().remove(h2.getTorre1().size() - 1));
 
-        int valh1 = calculaValor(h1, meta);
+        int valh1 = calculaValorAsterisco(h1, meta);
         h1.setValor(valh1);
-        int valh2 = calculaValor(h2, meta);
+        int valh2 = calculaValorAsterisco(h2, meta);
         h2.setValor(valh2);
 
         Nodo h3 = new Nodo(h1, h1);
         h3.getTorre3().add(h3.getTorre1().remove(h3.getTorre1().size() - 1));
-        int valh3 = calculaValor(h3, meta);
-        h2.setValor(valh3);
+        int valh3 = calculaValorAsterisco(h3, meta);
+        h3.setValor(valh3);
 
         Nodo h4 = new Nodo(h3, h3);
         Nodo h5 = new Nodo(h3, h3);
         h4.getTorre3().add(h4.getTorre2().remove(h4.getTorre2().size() - 1));
         h5.getTorre1().add(h5.getTorre2().remove(h5.getTorre2().size() - 1));
 
-        int valh4 = calculaValor(h4, meta);
+        int valh4 = calculaValorAsterisco(h4, meta);
         h4.setValor(valh4);
-        int valh5 = calculaValor(h5, meta);
+        int valh5 = calculaValorAsterisco(h5, meta);
         h5.setValor(valh5);
 
         Nodo h6 = new Nodo(h4, h4);
         h6.getTorre2().add(h6.getTorre1().remove(h6.getTorre1().size() - 1));
 
-        int valh6 = calculaValor(h6, meta);
+        int valh6 = calculaValorAsterisco(h6, meta);
         h6.setValor(valh6);
 
         Nodo h7 = new Nodo(h6, h6);
@@ -65,15 +66,15 @@ public class Test {
         h7.getTorre1().add(h7.getTorre3().remove(h7.getTorre3().size() - 1));
         h8.getTorre2().add(h8.getTorre3().remove(h8.getTorre3().size() - 1));
 
-        int valh7 = calculaValor(h7, meta);
+        int valh7 = calculaValorAsterisco(h7, meta);
         h7.setValor(valh7);
-        int valh8 = calculaValor(h8, meta);
+        int valh8 = calculaValorAsterisco(h8, meta);
         h8.setValor(valh8);
 
         Nodo h9 = new Nodo(h7, h7);
         h9.getTorre2().add(h9.getTorre3().remove(h9.getTorre3().size() - 1));
 
-        int valh9 = calculaValor(h9, meta);
+        int valh9 = calculaValorAsterisco(h9, meta);
         h9.setValor(valh9);
 
         Nodo nmeta = new Nodo(h9, h9);
@@ -100,21 +101,50 @@ public class Test {
         ndFirstBest.add(h7);
         ndFirstBest.add(h8);
         
-        // ordenarArray();
+        System.out.println("Antes de ordenar:");
+        ndFirstBest.forEach((t) -> System.out.println(t.toString() + " valor: " + t.getValor()));
+
+        ordenarMenorMayor();
+        
+        System.out.println("\nDespues de ordenar:");
+        ndFirstBest.forEach((t) -> System.out.println(t.toString() + " valor: " + t.getValor()));
 
         Nodo jeje = ndFirstBest.remove(0);
-        System.out.println(h1.toString());
         System.out.println(jeje.toString());
+        System.out.println("\n" + calculaValorAsterisco(jeje, meta));
 
+        /*jeje = ndFirstBest.remove(0);
+        System.out.println(jeje.toString());
+        System.out.println(calculaValorAsterisco(jeje, meta));
+
+        jeje = ndFirstBest.remove(0);
+        System.out.println(jeje.toString());
+        System.out.println(calculaValorAsterisco(jeje, meta));
+
+        jeje = ndFirstBest.remove(0);
+        System.out.println(jeje.toString());
+        System.out.println(calculaValorAsterisco(jeje, meta));*/
     }
 
-    public Nodo calculaValorRaiz(Nodo n) {
+    public void ordenarMenorMayor() {
+        Collections.sort(ndFirstBest, new Comparator<Nodo>() {
+            @Override
+            public int compare(Nodo n1, Nodo n2) {
+                return new Integer(n1.getValor()).compareTo(new Integer(n2.getValor()));
+            }
+        });
+    }
+
+    public int calculaValorRaiz(Nodo n) {
         if(n.equals(raiz)) {
-            return n;
+            return 0;
         }else {
-            valorRaiz++;
-            return n;
+            return 1 + calculaValorRaiz(n.getPadre());
         }
+    }
+
+    public int calculaValorAsterisco(Nodo n, Nodo meta) {
+        return calculaValorRaiz(n) - calculaValor(n, meta);
     }
 
     public int calculaValor(Nodo n, Nodo ndMeta) {
